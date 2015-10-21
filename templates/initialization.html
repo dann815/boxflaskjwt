@@ -1,0 +1,21 @@
+<!doctype html>
+
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+
+
+{% if users_list %}
+    <h1>App Users:</h1>
+    <ul>
+    {% for user in users_list %}
+        <li>
+            <a href="{{ url_for('detail', user_id=user.id) }}"> {{ user.name }} </a>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No users have been created.</p>
+{% endif %}
+
+{% if token %}
+<h4>Admin-level Token:</h4>{{ token }}
+{% endif %}

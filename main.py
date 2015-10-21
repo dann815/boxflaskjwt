@@ -40,12 +40,11 @@ def index():
     print 'Sending index view'
     initializeClientAndAuthObjects()
 
-
-
     ### Use this to create users (for now)
     # user = clientObject.create_user("Daniel Kaplan")
 
     token = jwtAuth.authObject.authenticate_instance()
+
     userList = jwtAuth.clientObject.users()
 
     print "### USER SEARCH: {0}".format(
@@ -57,6 +56,7 @@ def index():
     return render_template("index.html", users_list=userList, token=token) ### Gets index.html from /box/templates/box/
 
 
+### http://flask-restless.readthedocs.org/en/latest/searchformat.html#attribute-greater-than-a-value
 def user_search(client, name, search_string):
 
     url = '{0}/users'.format(API.BASE_API_URL)
@@ -71,6 +71,38 @@ def user_search(client, name, search_string):
 
     assert response.status_code == 200
     return response.json()
+
+@app.route('/groups')
+def group_list():
+
+    url = '{0}/users'.format(API.BASE_API_URL)
+    headers = {'Content-Type': 'application/json'}
+
+    # filters = [dict(name=name, op='like', val='%y%')]
+    # params = dict(q=json.dumps(dict(filters=filters)))
+    filters = [dict(name=name, op='like', val="%"+search_string+"%")]
+    params = dict(q=json.dumps(dict(filters=filters)))
+
+    response = requests.get(url, params=params, headers=headers)
+
+    assert response.status_code == 200
+    return response.json()
+
+
+@app.route('/initialize/yes/i/am/sure')
+def INITIALIZE():
+    initializeClientAndAuthObjects()
+
+    users_to_initialize = ['Aaron Kramer', 'Jason Kim', 'Priscilla Lok', 'Shannon Tan']
+
+    initialized=[]
+
+    for username in users_to_initialize:
+        initialized.append(jwtAuth.clientObject.create_user(username))
+
+    return render_template("initialization.html", users_list=initialized)
+
+
 
 @app.route('/user/detail/<user_id>')
 def detail(user_id):
@@ -111,9 +143,7 @@ def createUser(request, new_user_name):
     ### Initialization scripts go here
     ###
 
-
-
-    return redirect(url_for('detail', u.id))
+    return "not finished"#redirect(url_for('create', u.id))
 
 def deleteUser(request, user_id):
     initializeClientAndAuthObjects()
@@ -131,8 +161,6 @@ def deleteAll(request):
     # for u in clientObject.users():
     #     print u.delete()
     return "Uncomment the code first."
-
-
 
 
 
