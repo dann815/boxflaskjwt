@@ -33,8 +33,8 @@ export BOX_SDK_CLIENTSECRET=ABCDEFGHI1234
 export BOX_SDK_EID=123456  
 
 ### Step 5: Run the code  
-python main.py 
-Navigate to:   
+python main.py  
+Navigate to:  
 <http://localhost:5000> 
 
 
