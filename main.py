@@ -1,15 +1,19 @@
-import os
+import os, requests, json
 
 from flask import Flask, render_template, redirect, url_for
 
 from boxsdk.config import API
 from boxsdk.object.user import User
+
 import jwtAuth
 from jwtAuth import *
 
 app = Flask(__name__)
 
 ###
+# 
+# Steps on Github
+# 
 # Edit your ~/.bash_profile to include the following lines with your values
 #   export BOX_SDK_CLIENTID=1234567890ABCD
 #   export BOX_SDK_CLIENTSECRET=ABCDEFGHI1234
@@ -36,17 +40,37 @@ def index():
     print 'Sending index view'
     initializeClientAndAuthObjects()
 
+
+
     ### Use this to create users (for now)
     # user = clientObject.create_user("Daniel Kaplan")
 
     token = jwtAuth.authObject.authenticate_instance()
     userList = jwtAuth.clientObject.users()
+
+    print "### USER SEARCH: {0}".format(
+        user_search(jwtAuth.clientObject, "Roger"))
     # context={
     #     "users_list":jwtAuth.clientObject.users(),
     #     "token":token
     # }
     return render_template("index.html", users_list=userList, token=token) ### Gets index.html from /box/templates/box/
 
+
+def user_search(client, name, search_string):
+
+    url = '{0}/users'.format(API.BASE_API_URL)
+    headers = {'Content-Type': 'application/json'}
+
+    # filters = [dict(name=name, op='like', val='%y%')]
+    # params = dict(q=json.dumps(dict(filters=filters)))
+    filters = [dict(name=name, op='like', val="%"+search_string+"%")]
+    params = dict(q=json.dumps(dict(filters=filters)))
+
+    response = requests.get(url, params=params, headers=headers)
+
+    assert response.status_code == 200
+    return response.json()
 
 @app.route('/user/detail/<user_id>')
 def detail(user_id):
