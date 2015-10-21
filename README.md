@@ -1,6 +1,6 @@
 # boxflaskjwt
 Read the comments in the code.  They will help :)  
-Everything important is at /box/views.py  
+Everything important is at /main.py  
 
 Follow instructions to set up a Box Developer Application:  
 <https://box-content.readme.io/v2.0/docs/box-platform>  
