@@ -8,7 +8,9 @@ Follow instructions to set up a Box Developer Application:
 
 
 ### Step 0: Pull code  
-`git clone https://github.com/dann815/boxflaskjwt.git`  
+```
+git clone https://github.com/dann815/boxflaskjwt.git  
+```
 
 ### Step 1: Install packages   
 Recommended: [virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/)  
@@ -26,7 +28,9 @@ openssl rsa -pubout -in rsakey.pem -out rsapublic.pem
 ```
 
 ### Step 3: Input your RSA keys  
-`cat rsapublic.pem | pbcopy`  
+```
+cat rsapublic.pem | pbcopy  
+```
 Add the public key to your app at <https://developers.box.com/>->My Apps  
 Put the private key in your project folder at /box/rsakey.pem  
 
@@ -39,7 +43,9 @@ export BOX_SDK_EID=123456
 ```
 
 ### Step 5: Run the code  
-`python main.py`  
+```
+python main.py  
+```
 Navigate to:  
 <http://localhost:5000> 
 
