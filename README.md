@@ -61,7 +61,7 @@ https://github.com/box/box-python-sdk
 #### Flask Quickstart:  
 <http://flask.pocoo.org/docs/0.10/quickstart/>  
 
-#### Example custom API call using the SDK's client object
+#### Example custom API call using the SDK's client object:  
  ```python
  def listAllUsers(client):
     url = '{0}/users'.format(API.BASE_API_URL)
