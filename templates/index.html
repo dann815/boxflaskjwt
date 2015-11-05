@@ -1,21 +1,31 @@
-<!doctype html>
+{% extends 'outer_template.html' %}
 
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+{% block title %}
+App Users
+{% endblock %}
 
-
-{% if users_list %}
-    <h1>App Users:</h1>
-    <ul>
-    {% for user in users_list %}
-        <li>
-            <a href="{{ url_for('detail', user_id=user.id) }}"> {{ user.name }} </a>
-        </li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No users have been created.</p>
-{% endif %}
-
-{% if token %}
-<h4>Admin-level Token:</h4>{{ token }}
-{% endif %}
+{% block body %}
+    <div class="row">
+        <div class="col-xs-6">
+            <h3>List:</h3>
+            <ul>
+            {% for user in users_list %}
+            <li>
+                <a href="{{ url_for('user_detail', user_id=user.id) }}"> {{ user.name }} </a>
+            </li>
+            {% endfor %}
+            </ul>
+        </div>
+        <div class="col-xs-6">
+            <h3>New User:</h3>
+            <form action="{{ url_for('create_user') }}" method="POST">
+                User Name: <input type="text" name="name"><br>
+                Job Title: <input type="text" name="job"><br>
+                Phone: <input type="text" name="phone"><br>
+                Address: <input type="text" name="address"><br>
+                <input type="checkbox" name="initialize">Run init script<br>
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+    </div>
+{% endblock %}

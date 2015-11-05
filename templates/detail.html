@@ -1,40 +1,53 @@
-<!doctype html>
+{% extends 'outer_template.html' %}
 
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+{% block title %}
+Name: {{ user.name }}
+{% endblock %}
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
-{% if user %}
-    <input type=button value="Previous Page" onClick="javascript:history.go(-1);">
-
-    <h1>Name: {{ user.name }}</h1>
-
-    <h4>Attributes:</h4>
-    <ul>
-        <li>Created: {{ user.created_at }}</li>
-        <li>Modified: {{ user.modified_at }}</li>
-        <li>Space Used: {{ user.space_used }}</li>
-        <li>Language: {{ user.language }}</li>
-        <li>Timezone: {{ user.timezone }}</li>
-        <li>Job Title: {{ user.job_title }}</li>
-        <li>Phone: {{ user.phone }}</li>
-        <li>Address: {{ user.address }}</li>
-        <li>Image: <img src="{{ user.avatar_url }}" /> </li>
-    </ul>
-
-    <h4>Upload:</h4>
-    <form action='blah' id='file-form' method='POST'>
-        <div class='form-group'>
-            <input class='form-control' id='file-select' name='files' type='file'>
+{% block body %}
+    <div class="row">
+        <input type=button value="Previous Page" onClick="javascript:history.go(-1);">
+    </div>
+    <div class="row">
+        <div class="col-xs-6">
+            <h4>Attributes:</h4>
+            <ul>
+                <li>Created: {{ user.created_at }}</li>
+                <li>Modified: {{ user.modified_at }}</li>
+                <li>Space Used: {{ user.space_used }}</li>
+                <li>Language: {{ user.language }}</li>
+                <li>Timezone: {{ user.timezone }}</li>
+                <li>Job Title: {{ user.job_title }}</li>
+                <li>Phone: {{ user.phone }}</li>
+                <li>Address: {{ user.address }}</li>
+                <li>Image: <img src="{{ user.avatar_url }}" /> </li>
+            </ul>
         </div>
-        <div class='form-group'>
-            <button class='btn btn-default' id='upload-button' type='submit'>
-                Upload
-            </button>
+        <div class="col-xs-6">
+            <h4>Upload File:</h4>
+            <form action='#' id='file-form' method='POST'>
+                <div class='form-group'>
+                    <input class='form-control' id='file-select' name='files' type='file'>
+                </div>
+                <div class='form-group'>
+                    <button class='btn btn-default' id='upload-button' type='submit'>
+                        Upload
+                    </button>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
+    <div class="row">
+        <div class="col-xs-6 col-xs-offset-6">
+            <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST">
+                Cannot be undone. Type 'YES' to delete this user: <br />
+                <input type="text" name="deleteconf">
+                <button type="submit" >DELETE THIS USER</button>
+            </form>
+        </div>
+    </div>
 
-    <h4>Use-As Token:</h4>{{ token }}
 
     <script>
       var form = document.getElementById('file-form');
@@ -51,8 +64,6 @@
 
         var files = fileSelect.files;
         var formData = new FormData();
-
-
 
         // formData.append('files', files[0], files[0].name);
         formData.append('file', files[0])
@@ -74,8 +85,8 @@
             uploadButton.innerHTML = 'Upload';
             // Log the JSON response to prove this worked
             console.log(data.responseText);
-      location.reload(true);
+            location.reload(true);
         });
       }
     </script>
-{% endif %}
+{% endblock %}

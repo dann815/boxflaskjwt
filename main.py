@@ -1,116 +1,126 @@
-import os
+import os, time
 
-from flask import Flask, render_template, redirect, url_for
-
-from boxsdk.config import API
-from boxsdk.object.user import User
-import jwtAuth
-from jwtAuth import *
+from flask import Flask, render_template, session, escape, g, request, url_for, redirect, flash
 
 app = Flask(__name__)
+app.config.from_envvar('BOX_APPLICATION_SETTINGS')
+app.config.from_object(__name__)
 
-###
-# Edit your ~/.bash_profile to include the following lines with your values
-#   export BOX_SDK_CLIENTID=1234567890ABCD
-#   export BOX_SDK_CLIENTSECRET=ABCDEFGHI1234
-#   export BOX_SDK_EID=123456
-###
-# global client_id, client_secret, eid
+import logging_network
 
-### Example of how to make calls directly to the API after authentication
-def listAllUsers(client):
-    url = '{0}/users'.format(API.BASE_API_URL)
-    box_response = client.make_request('GET', url)
-    response = box_response.json()
-    return [User(client._session, item['id'], item) for item in response['entries']]
+if app.config['DEBUG']:
+    customLogger = logging_network.LoggingNetwork()
+else:
+    customLogger = None
 
+from boxsdk import Client, JWTAuth
 
-###
-# 1. Run the django server
-#       python manage.py runserver
-# 2. Navigate to localhost:8000/box/
-#
-###
-@app.route('/')
-def index():
-    print 'Sending index view'
-    initializeClientAndAuthObjects()
+"""
+Main Start
 
-    ### Use this to create users (for now)
-    # user = clientObject.create_user("Daniel Kaplan")
+"""
 
-    token = jwtAuth.authObject.authenticate_instance()
-    userList = jwtAuth.clientObject.users()
-    # context={
-    #     "users_list":jwtAuth.clientObject.users(),
-    #     "token":token
-    # }
-    return render_template("index.html", users_list=userList, token=token) ### Gets index.html from /box/templates/box/
-
-
-@app.route('/user/detail/<user_id>')
-def detail(user_id):
-    print 'Sending detail view'
-    initializeClientAndAuthObjects()
-
-    u = jwtAuth.clientObject.user(user_id=user_id).get() # Create a user object
-    print "AUTHENTICATING AS USER: " + user_id + " (" + u.name + ")"
-    user_token = jwtAuth.authObject.authenticate_app_user(u) # *****  Auth with that user to create folders ******
-    user_client = Client(jwtAuth.authObject) # Create a new client for that user
-
-    me = user_client.user(user_id='me').get() # Get the user's info
-
-    ###
-    ### Extra code for the detail view goes here
-    ###
-
-    ### Authenticate as the admin again
-    print "AUTHENTICATING BACK TO ADMIN"
-    jwtAuth.authObject.authenticate_instance()
-
-
-    user = jwtAuth.clientObject.user(user_id=user_id).get() # Send the entire user json response
-    token = user_token
-    return render_template("detail.html", user=user, token=token)
-
-#TODO
-###
-### Change to a form
-###
-def createUser(request, new_user_name):
-    print 'Creating user'
-    initializeClientAndAuthObjects()
-
-    u = jwtAuth.clientObject.create_user(name=new_user_name)
-
-    ###
-    ### Initialization scripts go here
-    ###
-
-
-
-    return redirect(url_for('detail', u.id))
-
-def deleteUser(request, user_id):
-    initializeClientAndAuthObjects()
-
-    u = jwtAuth.clientObject.user(user_id=user_id).get()
-    u.delete()
-
+# This should store the token in a cache and set the session value to a hashed retrieval key.
+def store_tokens(access_t, refresh_t):
+    session['token_id'] = access_t
     return
 
 
-### CAREFUL WITH USAGE:
-def deleteAll(request):
-    ### DANGER: CANNOT BE UNDONE
-    # print "Delete all App Users"
-    # for u in clientObject.users():
-    #     print u.delete()
-    return "Uncomment the code first."
+# When any request comes in, initialize the object that will check the expiration of the token.
+# This object will also refresh the token against the API if needed.
+@app.before_request
+def load_auth_object_into_current_page_load_context():
+    if "/static/" in request.path:
+        return
+
+    if "token_id" in session:
+        print "ACCESS TOKEN FOUND: {0}".format(escape(session['token_id']))
+        auth = JWTAuth(client_id=app.config['CLIENT_ID'],
+            client_secret=app.config['CLIENT_SECRET'],
+            enterprise_id=app.config['EID'],
+            rsa_private_key_file_sys_path=os.path.join(os.path.dirname(__file__),'rsakey.pem'),
+            store_tokens=store_tokens,
+            access_token=escape(session['token_id'])) # <-- This is the difference
+    else:
+        auth = JWTAuth(client_id=app.config['CLIENT_ID'],
+            client_secret=app.config['CLIENT_SECRET'],
+            enterprise_id=app.config['EID'],
+            rsa_private_key_file_sys_path=os.path.join(os.path.dirname(__file__),'rsakey.pem'),
+            store_tokens=store_tokens)
+        print "CREATED NEW ACCESS TOKEN: {0}".format(session['token_id'])
+    g.auth = auth
 
 
+@app.route('/')
+def index():
+    print '### Sending Index view ###'
+    client = Client(g.auth, network_layer=customLogger)
+
+    # NEVER SEND AN ADMIN TOKEN TO THE CLIENT
+    # I only provide it here so that you can use this app to quickly get a token.
+    return render_template("index.html",
+                           users_list=client.users(),
+                           token=g.auth.access_token)
+
+
+@app.route('/user/<user_id>', methods=['GET'])
+def user_detail(user_id):
+    print '### Sending detail view ###'
+    client = Client(g.auth, network_layer=customLogger)
+    user = client.user(user_id=user_id).get()
+
+    # As an admin, we can act on behalf of other users by creating new auth and client objects.
+    # We should also be caching this token.  For the purposes of this quickstart
+    # we only cache access for one user (the admin).
+    print "AUTHENTICATING USER: " + user_id + " (" + user.name + ")"
+    user_auth = JWTAuth(client_id=app.config['CLIENT_ID'],
+                client_secret=app.config['CLIENT_SECRET'],
+                enterprise_id=app.config['EID'],
+                rsa_private_key_file_sys_path=os.path.join(os.path.dirname(__file__),'rsakey.pem'))
+    user_auth.authenticate_app_user(user)
+    user_client = Client(user_auth)
+
+    # Do things as the user by using the user_client object
+
+    token = user_auth.access_token
+    return render_template("detail.html",
+                           user=user,
+                           token=token)
+
+# During user creation we can create initial folder structures
+# with retention policies, collaborations, etc.
+@app.route('/user/new', methods=['POST'])
+def create_user():
+    client = Client(g.auth, network_layer=customLogger)
+    new_user = client.create_user(request.form['name'],
+                                  job_title=request.form['job'],
+                                  phone=request.form['phone'],
+                                  address=request.form['address'])
+
+    # User init scripts go here
+
+
+    flash("Created new user: {0} ".format(request.form['name']))
+    return redirect(url_for('index'))
+
+
+@app.route('/user/<user_id>', methods=['POST'])
+def delete_user(user_id):
+    if request.form['deleteconf'].lower() == 'yes':
+        print "DELETING USER: {0}".format(user_id)
+        flash("Deleted user: {0}".format(user_id))
+        client = Client(g.auth, network_layer=customLogger)
+
+        user = client.user(user_id=user_id)
+        user.delete(params={"force":True})
+
+        time.sleep(1) # Wait for the DB to catch up
+        return redirect(url_for('index'))
+    else:
+        flash("Must type YES to confirm", 'error')
+        return redirect(url_for('delete_user', user_id=user_id))
 
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=app.config['DEBUG'])
