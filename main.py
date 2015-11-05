@@ -1,3 +1,4 @@
+
 import os, time
 
 from flask import Flask, render_template, session, escape, g, request, url_for, redirect, flash
@@ -18,13 +19,13 @@ from boxsdk import Client, JWTAuth
 """
 Main Start
 
+
 """
 
 # This should store the token in a cache and set the session value to a hashed retrieval key.
 def store_tokens(access_t, refresh_t):
     session['token_id'] = access_t
     return
-
 
 # When any request comes in, initialize the object that will check the expiration of the token.
 # This object will also refresh the token against the API if needed.
@@ -99,7 +100,6 @@ def create_user():
 
     # User init scripts go here
 
-
     flash("Created new user: {0} ".format(request.form['name']))
     return redirect(url_for('index'))
 
@@ -119,8 +119,6 @@ def delete_user(user_id):
     else:
         flash("Must type YES to confirm", 'error')
         return redirect(url_for('delete_user', user_id=user_id))
-
-
 
 if __name__ == "__main__":
     app.run(debug=app.config['DEBUG'])
