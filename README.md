@@ -69,7 +69,7 @@ python main.py
 ```
 Navigate to:  
 <http://localhost:5000> 
- 
+### Appendix  
 #### Box SDK can be found at:  
 https://github.com/box/box-python-sdk  
 
