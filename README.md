@@ -14,7 +14,7 @@ git clone https://github.com/dann815/boxflaskjwt.git
 
 ### Step 1: Install packages   
 Recommended: [virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/)  
-python 2.7.10  **Note: Does not work with 3.x**  
+Use python 2.7.*  **Note: Does not work with 3.x**  
 ```
 pip install Flask   
 pip install boxsdk    
