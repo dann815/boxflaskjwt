@@ -61,6 +61,7 @@ def index():
     # I only provide it here so that you can use this app to quickly get a token.
     return render_template("index.html",
                            users_list=client.users(),
+                           groups_list=client.groups(),
                            token=g.auth.access_token)
 
 
@@ -82,27 +83,38 @@ def user_detail(user_id):
     user_client = Client(user_auth)
 
     # Do things as the user by using the user_client object
+    files = user_client.folder(folder_id='0').get_items(limit=100)
+    print files
 
     token = user_auth.access_token
     return render_template("detail.html",
                            user=user,
+                           files_list=files,
                            token=token)
 
 # During user creation we can create initial folder structures
 # with retention policies, collaborations, etc.
 @app.route('/user/new', methods=['POST'])
 def create_user():
+    if not request.form['name']:
+        flash("Name required for user creation.", "error")
+        return redirect(url_for('index'))
     client = Client(g.auth, network_layer=customLogger)
     new_user = client.create_user(request.form['name'],
                                   job_title=request.form['job'],
                                   phone=request.form['phone'],
                                   address=request.form['address'])
-
-    # User init scripts go here
-
-    flash("Created new user: {0} ".format(request.form['name']))
+    if request.form['initialize']:
+        # User init scripts go here
+        add_user_to_group(client, new_user, "SuchGroup")
+        flash("Initialized user: {0}".format(request.form['name']))
+    else:
+        flash("Created new user: {0} ".format(request.form['name']))
     return redirect(url_for('index'))
 
+def add_user_to_group(client, user, groupname):
+    [x.add_member(user, "member") for x in client.groups() if x.name==groupname]
+    return
 
 @app.route('/user/<user_id>', methods=['POST'])
 def delete_user(user_id):
@@ -112,7 +124,7 @@ def delete_user(user_id):
         client = Client(g.auth, network_layer=customLogger)
 
         user = client.user(user_id=user_id)
-        user.delete(params={"force":True})
+        user.delete(params={"force":True}) # Use the force
 
         time.sleep(1) # Wait for the DB to catch up
         return redirect(url_for('index'))

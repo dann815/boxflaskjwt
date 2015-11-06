@@ -10,7 +10,7 @@ Name: {{ user.name }}
         <input type=button value="Previous Page" onClick="javascript:history.go(-1);">
     </div>
     <div class="row">
-        <div class="col-xs-6">
+        <div class="col-xs-8">
             <h4>Attributes:</h4>
             <ul>
                 <li>Created: {{ user.created_at }}</li>
@@ -24,7 +24,34 @@ Name: {{ user.name }}
                 <li>Image: <img src="{{ user.avatar_url }}" /> </li>
             </ul>
         </div>
-        <div class="col-xs-6">
+        <div class="col-xs-4">
+            <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST">
+                Type 'YES' to delete this user (Cannot be undone) <br />
+                <input type="text" name="deleteconf">
+                <button type="submit" >DELETE THIS USER</button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-8">
+            <h3>Files List:</h3>
+            <ul>
+                {% if not files_list %}
+                    None created.
+                {% else %}
+                    {% for file in files_list %}
+                        <li class="{{ file._item_type }}">
+                            {% if file._item_type=="folder" %}
+                                <a href="#"> {{ file.name }}</a>
+                            {% else %}
+                                {{ file.name }}
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+        </div>
+        <div class="col-xs-4">
             <h4>Upload File:</h4>
             <form action='#' id='file-form' method='POST'>
                 <div class='form-group'>
@@ -39,12 +66,8 @@ Name: {{ user.name }}
         </div>
     </div>
     <div class="row">
-        <div class="col-xs-6 col-xs-offset-6">
-            <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST">
-                Cannot be undone. Type 'YES' to delete this user: <br />
-                <input type="text" name="deleteconf">
-                <button type="submit" >DELETE THIS USER</button>
-            </form>
+        <div class="col-xs-12">
+
         </div>
     </div>
 

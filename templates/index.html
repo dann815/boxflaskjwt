@@ -6,24 +6,28 @@ App Users
 
 {% block body %}
     <div class="row">
-        <div class="col-xs-6">
+        <div class="col-xs-4">
             <h3>List:</h3>
             <ul>
-            {% for user in users_list %}
-            <li>
-                <a href="{{ url_for('user_detail', user_id=user.id) }}"> {{ user.name }} </a>
-            </li>
-            {% endfor %}
+                {% if not users_list %}
+                    None created.
+                {% else %}
+                    {% for user in users_list %}
+                        <li>
+                            <a href="{{ url_for('user_detail', user_id=user.id) }}"> {{ user.name }} </a>
+                        </li>
+                    {% endfor %}
+                {% endif %}
             </ul>
         </div>
         <div class="col-xs-6">
             <h3>New User:</h3>
             <form action="{{ url_for('create_user') }}" method="POST">
-                User Name: <input type="text" name="name"><br>
-                Job Title: <input type="text" name="job"><br>
-                Phone: <input type="text" name="phone"><br>
-                Address: <input type="text" name="address"><br>
-                <input type="checkbox" name="initialize">Run init script<br>
+                User Name: <input class="attrfield" type="text" name="name"><br>
+                Job Title: <input class="attrfield" type="text" name="job"><br>
+                Phone: <input class="attrfield" type="text" name="phone"><br>
+                Address: <input class="attrfield" type="text" name="address"><br>
+                <input class="attrfield" type="checkbox" name="initialize">Run init script<br>
                 <input type="submit" value="Submit">
             </form>
         </div>
