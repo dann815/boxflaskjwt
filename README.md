@@ -22,8 +22,16 @@ pip install boxsdk[jwt]
 ```
 
 ### Step 2: Generate your RSA keys  
+Public key without password:  
 ```
-openssl genrsa -out rsakey.pem 2048  
+openssl genrsa -out rsakey.pem 2048 
+```  
+OR Public key with password:  
+```
+openssl genrsa -aes256 -out rsakey.pem 2048
+```  
+THEN create a public key:  
+```
 openssl rsa -pubout -in rsakey.pem -out rsapublic.pem  
 ```
 
