@@ -69,13 +69,7 @@ python main.py
 ```
 Navigate to:  
 <http://localhost:5000> 
-
-
-  
-Contact: DanK@box.com  
-  
-  
-  
+ 
 #### Box SDK can be found at:  
 https://github.com/box/box-python-sdk  
 
@@ -89,4 +83,5 @@ https://github.com/box/box-python-sdk
     box_response = client.make_request('GET', url)
     response = box_response.json()
     return [User(client._session, item['id'], item) for item in response['entries']]
-```
+```  
+Contact: DanK@box.com  
