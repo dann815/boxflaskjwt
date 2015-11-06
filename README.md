@@ -13,7 +13,7 @@ git clone https://github.com/dann815/boxflaskjwt.git
 ```
 
 ### Step 1: Install packages   
-Recommended: [virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/)  
+It's recommended to use [virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/) with Python  
 Use python 2.7.*  **Note: Does not work with 3.x**  
 ```
 pip install Flask   
@@ -45,12 +45,22 @@ cat rsapublic.pem | pbcopy
 Add the public key to your app at <https://developers.box.com/>->My Apps  
 Put the private key in your project folder at /box/rsakey.pem  
 
-### Step 4: Set environment variables  
-On Mac: Open ~/.bash_profile in a text editor and add the following lines (with your values from developers.box.com)  
+### Step 4: Set configuration  
+Create a file anywhere called settings.cfg   
+Add these lines to settings.cfg  
 ```
-export BOX_SDK_CLIENTID=1234567890ABCD  
-export BOX_SDK_CLIENTSECRET=ABCDEFGHI1234  
-export BOX_SDK_EID=123456  
+# General config
+DEBUG = True
+SECRET_KEY = 'A RANDOM SECRET KEY'
+
+# Box config
+CLIENT_ID = 'YOUR CLIENT ID'
+CLIENT_SECRET = 'YOUR CLIENT SECRET'
+EID = 'YOUR EID'
+```   
+Set an environment variable to point to the location of the settings.cfg file  
+```
+export BOX_APPLICATION_SETTINGS=/Users/danielkaplan/dev/jwtFlask/settings.cfg
 ```
 
 ### Step 5: Run the code  
