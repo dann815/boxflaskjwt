@@ -38,6 +38,7 @@ openssl rsa -pubout -in rsakey.pem -out rsapublic.pem
 ```
 
 ### Step 3: Input your RSA keys  
+Copy your public key:  
 ```
 cat rsapublic.pem | pbcopy  
 ```
