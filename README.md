@@ -8,6 +8,7 @@ Follow instructions to set up a Box Developer Application:
 
 
 ### Step 0: Pull code  
+Navigate to the folder you want to place this folder in ("./boxflaskjwt")  
 ```
 git clone https://github.com/dann815/boxflaskjwt.git  
 ```
@@ -15,7 +16,7 @@ git clone https://github.com/dann815/boxflaskjwt.git
 ### Step 1: Install packages   
 It's recommended to use [virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/) with Python  
 Use python 2.7.*  **Note: Does not work with 3.x**  
-```
+```  
 sudo easy_install pip  
 pip install Flask   
 pip install boxsdk    
