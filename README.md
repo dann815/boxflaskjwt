@@ -44,11 +44,12 @@ Copy your public key:
 cat rsapublic.pem | pbcopy  
 ```
 Add the public key to your app at <https://developers.box.com/>->My Apps  
-Put the private key in your project folder at /box/rsakey.pem  
+Instructions at: <https://box-content.readme.io/v2.0/docs/app-auth>  
+Put the private key in your project folder at the root level.  
 
 ### Step 4: Set configuration  
-Create a file anywhere called settings.cfg   
-Add these lines to settings.cfg  
+Create a file in the project's root directory named settings.cfg   
+Add the following lines to settings.cfg:  
 ```
 # General config
 DEBUG = True
@@ -58,7 +59,14 @@ SECRET_KEY = 'A RANDOM SECRET KEY'
 CLIENT_ID = 'YOUR CLIENT ID'
 CLIENT_SECRET = 'YOUR CLIENT SECRET'
 EID = 'YOUR EID'
-```   
+``` 
+Generate a random key in by running: 
+```
+python
+import os
+os.urandom(24)
+```  
+  
 Set an environment variable to point to the location of the settings.cfg file  
 ```
 export BOX_APPLICATION_SETTINGS=/Users/danielkaplan/dev/jwtFlask/settings.cfg
