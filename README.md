@@ -47,7 +47,7 @@ Add the public key to your app at <https://developers.box.com/>->My Apps
 Instructions at: <https://box-content.readme.io/v2.0/docs/app-auth>  
 Put the private key in your project folder at the root level.  
 
-### Step 4: Set configuration  
+### Step 4: Configuration  
 Create a file in the project's root directory named settings.cfg   
 Add the following lines to settings.cfg:  
 ```
