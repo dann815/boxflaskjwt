@@ -14,7 +14,7 @@ App Users
                 {% else %}
                     {% for user in users_list %}
                         <li>
-                            <a href="{{ url_for('user_detail', user_id=user.id) }}"> {{ user.name }} - {{ user.id }}</a>
+                            <a href="{{ url_for('user_detail', user_id=user.id) }}">{{ user.name }}</a> - {{ user.id }}
                         </li>
                     {% endfor %}
                 {% endif %}

@@ -42,7 +42,7 @@ Name: {{ user.name }}
                     {% for file in files_list %}
                         <li class="{{ file._item_type }}">
                             {% if file._item_type=="folder" %}
-                                <a href="#"> {{ file.name }} - {{ file.id }}</a>
+                                <a href="#">{{ file.name }}</a> - {{ file.id }}
                             {% else %}
                                 {{ file.name }} - {{ file.id }}
                             {% endif %}
