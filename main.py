@@ -104,12 +104,13 @@ def create_user():
                                   job_title=request.form['job'],
                                   phone=request.form['phone'],
                                   address=request.form['address'])
-    if request.form['initialize']:
+    if request.form.get('initialize'):
         # User init scripts go here
         add_user_to_group(client, new_user, "SuchGroup")
         flash("Initialized user: {0}".format(request.form['name']))
     else:
         flash("Created new user: {0} ".format(request.form['name']))
+
     return redirect(url_for('index'))
 
 def add_user_to_group(client, user, groupname):

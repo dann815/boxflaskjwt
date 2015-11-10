@@ -14,7 +14,7 @@ App Users
                 {% else %}
                     {% for user in users_list %}
                         <li>
-                            <a href="{{ url_for('user_detail', user_id=user.id) }}"> {{ user.name }} </a>
+                            <a href="{{ url_for('user_detail', user_id=user.id) }}"> {{ user.name }} - {{ user.id }}</a>
                         </li>
                     {% endfor %}
                 {% endif %}
@@ -27,7 +27,7 @@ App Users
                 Job Title: <input class="attrfield" type="text" name="job"><br>
                 Phone: <input class="attrfield" type="text" name="phone"><br>
                 Address: <input class="attrfield" type="text" name="address"><br>
-                <input class="attrfield" type="checkbox" name="initialize">Run init script<br>
+                <input class="attrfield" type="checkbox" name="initialize" value="false">Add to group<br>
                 <input type="submit" value="Submit">
             </form>
         </div>
