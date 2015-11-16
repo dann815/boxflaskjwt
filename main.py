@@ -15,6 +15,8 @@ else:
     customLogger = None
 
 from boxsdk import Client, JWTAuth
+from boxsdk.object.user import User
+from boxsdk.config import API
 
 """
 Main Start
@@ -84,13 +86,18 @@ def user_detail(user_id):
 
     # Do things as the user by using the user_client object
     files = user_client.folder(folder_id='0').get_items(limit=100)
-    print files
+
+    # Build the preview link into the file objects sent to the client
+    for f in files:
+        if f._item_type=="file":
+            f.preview_url = f.get(fields=['expiring_embed_link']).expiring_embed_link['url']
 
     token = user_auth.access_token
     return render_template("detail.html",
                            user=user,
                            files_list=files,
                            token=token)
+
 
 # During user creation we can create initial folder structures
 # with retention policies, collaborations, etc.
@@ -132,6 +139,15 @@ def delete_user(user_id):
     else:
         flash("Must type YES to confirm", 'error')
         return redirect(url_for('delete_user', user_id=user_id))
+
+
+# Example direct call to the API
+def listAllUsers(client):
+    url = '{0}/users'.format(API.BASE_API_URL)
+    box_response = client.make_request('GET', url)
+    response = box_response.json()
+    return [User(client._session, item['id'], item) for item in response['entries']]
+
 
 if __name__ == "__main__":
     app.run(debug=app.config['DEBUG'])

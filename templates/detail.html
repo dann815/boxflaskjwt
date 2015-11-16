@@ -44,7 +44,8 @@ Name: {{ user.name }}
                             {% if file._item_type=="folder" %}
                                 <a href="#">{{ file.name }}</a> - {{ file.id }}
                             {% else %}
-                                {{ file.name }} - {{ file.id }}
+                                <a href="{{ file.preview_url }}">{{ file.name }}</a> - {{ file.id }}<br />
+                                <iframe width="50%" height="300px" src="{{ file.preview_url }}" name="{{ file.name }}_preview"></iframe>
                             {% endif %}
                         </li>
                     {% endfor %}
