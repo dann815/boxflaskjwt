@@ -8,8 +8,9 @@ Follow instructions to set up a Box Developer Application:
 
 
 ### Step 0: Pull code  
-Navigate to the folder you want to place this folder in ("./boxflaskjwt")  
+Navigate to the folder you want to place this folder in    
 ```
+cd ~/development  
 git clone https://github.com/dann815/boxflaskjwt.git  
 ```
 
@@ -82,6 +83,11 @@ Navigate to:
 ### Appendix  
 #### Box SDK can be found at:  
 https://github.com/box/box-python-sdk  
+
+### Screenshots  
+![List View](https://raw.githubusercontent.com/dann815/boxflaskjwt/6edfaf250c7842f592a10d271a5cfba2d07d614f/Listview.png?raw=true “List View”)   
+![Detail View](https://raw.githubusercontent.com/dann815/boxflaskjwt/6edfaf250c7842f592a10d271a5cfba2d07d614f/Detailview.png?raw=true “Detail View”)  
+
 
 #### Flask Quickstart:  
 <http://flask.pocoo.org/docs/0.10/quickstart/>  
