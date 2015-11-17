@@ -14,7 +14,7 @@ git clone https://github.com/dann815/boxflaskjwt.git
 ```
 
 ### Step 1: Install packages   
-It's recommended to use [virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/) with Python  
+It's always recommended to use [virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/) with Python  
 Use python 2.7.*  **Note: Does not work with 3.x**  
 ```  
 sudo easy_install pip  
@@ -24,12 +24,12 @@ pip install boxsdk[jwt]
 ```
 
 ### Step 2: Generate your RSA keys  
-Create a private key  
-without password:  
+Create a private key…  
+…without password:  
 ```
 openssl genrsa -out rsakey.pem 2048 
 ```  
-OR with password:  
+…OR with password:  
 ```
 openssl genrsa -aes256 -out rsakey.pem 2048
 ```  
@@ -45,11 +45,11 @@ Copy your public key:
 cat rsapublic.pem | pbcopy  
 ```
 Add the public key to your app at <https://developers.box.com/>->My Apps  
-Instructions at: <https://box-content.readme.io/v2.0/docs/app-auth>  
+Follow the instructions at: <https://box-content.readme.io/v2.0/docs/app-auth>  
 Put the private key in your project folder at the root level.  
 
 ### Step 4: Configuration  
-Create a file in the project's root directory named settings.cfg   
+Create a file named settings.cfg   
 Add the following lines to settings.cfg:  
 ```
 # General config
@@ -61,7 +61,7 @@ CLIENT_ID = 'YOUR CLIENT ID'
 CLIENT_SECRET = 'YOUR CLIENT SECRET'
 EID = 'YOUR EID'
 ``` 
-Generate a random key in by running: 
+Note: Generate a random string for the SECRET_KEY by running: 
 ```
 python
 import os
