@@ -85,7 +85,9 @@ Navigate to:
 https://github.com/box/box-python-sdk  
 
 ### Screenshots  
+Home Page (List View):  
 ![List View](https://raw.githubusercontent.com/dann815/boxflaskjwt/6edfaf250c7842f592a10d271a5cfba2d07d614f/Listview.png?raw=true “List View”)   
+User Page (Detail View):  
 ![Detail View](https://raw.githubusercontent.com/dann815/boxflaskjwt/6edfaf250c7842f592a10d271a5cfba2d07d614f/Detailview.png?raw=true “Detail View”)  
 
 
