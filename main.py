@@ -15,24 +15,42 @@ else:
     customLogger = None
 
 from boxsdk import Client, JWTAuth
-from boxsdk.object.user import User
-from boxsdk.config import API
+from boxsdk.object.user import User # Used for direct-to-API example
 
 """
 Main Start
 
+Order of Operations:
+1)  load_auth_object_into_current_pageload_context() runs at the beginning of every request.
+    The method loads into memory an object that handles token refresh.
+    We could take it one step further by loading the Client object but I am sending the token to the frontend for developers to use in Postman or other.
+
+2)  If a token refresh is needed, the defined store_tokens() is called by the auth object.
+    store_tokens() is where the access tokens would be retrieved for the logged in user.
+    Ideally these tokens should be kept securely hashed in a cache.
+    These tokens are valid for 60 minutes.
+    The auth object will catch a usage of an invalid token, refresh it, and pass it to the store_tokens() method.
+
+3)  index() runs and creates a Client object around the authentication object.
+    The Client object makes calls against the API using SDK methods.
 
 """
 
+
 # This should store the token in a cache and set the session value to a hashed retrieval key.
+# It should store the time that the token was accessed and run a script
+#  to refresh the token if it has been more than ~55 minutes.
+# For simplicity, this application refreshes through the session refresh cookie.
 def store_tokens(access_t, refresh_t):
     session['token_id'] = access_t
+
     return
+
 
 # When any request comes in, initialize the object that will check the expiration of the token.
 # This object will also refresh the token against the API if needed.
 @app.before_request
-def load_auth_object_into_current_page_load_context():
+def load_auth_object_into_current_pageload_context():
     if "/static/" in request.path:
         return
 
@@ -43,14 +61,13 @@ def load_auth_object_into_current_page_load_context():
             enterprise_id=app.config['EID'],
             rsa_private_key_file_sys_path=os.path.join(os.path.dirname(__file__),'rsakey.pem'),
             store_tokens=store_tokens,
-            access_token=escape(session['token_id'])) # <-- This is the difference
+            access_token=escape(session['token_id'])) # <-- This is the difference.  Uses the old token.
     else:
         auth = JWTAuth(client_id=app.config['CLIENT_ID'],
             client_secret=app.config['CLIENT_SECRET'],
             enterprise_id=app.config['EID'],
             rsa_private_key_file_sys_path=os.path.join(os.path.dirname(__file__),'rsakey.pem'),
             store_tokens=store_tokens)
-        print "CREATED NEW ACCESS TOKEN: {0}".format(session['token_id'])
     g.auth = auth
 
 
@@ -81,16 +98,16 @@ def user_detail(user_id):
                 client_secret=app.config['CLIENT_SECRET'],
                 enterprise_id=app.config['EID'],
                 rsa_private_key_file_sys_path=os.path.join(os.path.dirname(__file__),'rsakey.pem'))
-    user_auth.authenticate_app_user(user)
+    user_auth.authenticate_app_user(user) # <--- Authenticate as the user
     user_client = Client(user_auth)
 
-    # Do things as the user by using the user_client object
+    # Make API calls as the user by using the user_client object
     files = user_client.folder(folder_id='0').get_items(limit=100)
 
-    # Build the preview link into the file objects sent to the client
+    # Build the preview link into any files sent to the client
     for f in files:
         if f._item_type=="file":
-            f.preview_url = f.get(fields=['expiring_embed_link']).expiring_embed_link['url']
+                f.preview_url = f.get(fields=['expiring_embed_link']).expiring_embed_link['url']
 
     token = user_auth.access_token
     return render_template("detail.html",
@@ -120,9 +137,13 @@ def create_user():
 
     return redirect(url_for('index'))
 
+
+# Helper method for creating a new user.
+# The initialization prompt for groups.
 def add_user_to_group(client, user, groupname):
     [x.add_member(user, "member") for x in client.groups() if x.name==groupname]
     return
+
 
 @app.route('/user/<user_id>', methods=['POST'])
 def delete_user(user_id):
@@ -142,10 +163,8 @@ def delete_user(user_id):
 
 
 # Example direct call to the API
-def listAllUsers(client):
-    url = '{0}/users'.format(API.BASE_API_URL)
-    box_response = client.make_request('GET', url)
-    response = box_response.json()
+def listAllUsers_direct_from_API(client):
+    response = client.make_request('GET', "https://api.box.com/2.0/users").json()
     return [User(client._session, item['id'], item) for item in response['entries']]
 
 
