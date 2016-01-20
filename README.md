@@ -1,4 +1,4 @@
-# boxflaskjwt
+# Box App Users - Python/Flask Quickstart
 Read the comments in the code.  They will help :)  
 Everything important is at /main.py  
 
