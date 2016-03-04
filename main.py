@@ -71,7 +71,7 @@ def load_auth_object_into_current_pageload_context():
     g.auth = auth
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
     print '### Sending Index view ###'
     client = Client(g.auth, network_layer=customLogger)
@@ -82,38 +82,6 @@ def index():
                            users_list=client.users(),
                            groups_list=client.groups(),
                            token=g.auth.access_token)
-
-
-@app.route('/user/<user_id>', methods=['GET'])
-def user_detail(user_id):
-    print '### Sending detail view ###'
-    client = Client(g.auth, network_layer=customLogger)
-    user = client.user(user_id=user_id).get()
-
-    # As an admin, we can act on behalf of other users by creating new auth and client objects.
-    # We should also be caching this token.  For the purposes of this quickstart
-    # we only cache access for one user (the admin).
-    print "AUTHENTICATING USER: " + user_id + " (" + user.name + ")"
-    user_auth = JWTAuth(client_id=app.config['CLIENT_ID'],
-                client_secret=app.config['CLIENT_SECRET'],
-                enterprise_id=app.config['EID'],
-                rsa_private_key_file_sys_path=os.path.join(os.path.dirname(__file__),'rsakey.pem'))
-    user_auth.authenticate_app_user(user) # <--- Authenticate as the user
-    user_client = Client(user_auth)
-
-    # Make API calls as the user by using the user_client object
-    files = user_client.folder(folder_id='0').get_items(limit=100)
-
-    # Build the preview link into any files sent to the client
-    for f in files:
-        if f._item_type=="file":
-                f.preview_url = f.get(fields=['expiring_embed_link']).expiring_embed_link['url']
-
-    token = user_auth.access_token
-    return render_template("detail.html",
-                           user=user,
-                           files_list=files,
-                           token=token)
 
 
 # During user creation we can create initial folder structures
@@ -145,6 +113,38 @@ def add_user_to_group(client, user, groupname):
     return
 
 
+@app.route('/user/<user_id>', methods=['GET'])
+def user_detail(user_id):
+    print '### Sending detail view ###'
+    client = Client(g.auth, network_layer=customLogger)
+    user = client.user(user_id=user_id).get()
+
+    # As an admin, we can act on behalf of other users by creating new auth and client objects.
+    # We should also be caching this token.  For the purposes of this quickstart
+    # we only cache access for one user (the admin).
+    print "AUTHENTICATING USER: " + user_id + " (" + user.name + ")"
+    user_auth = JWTAuth(client_id=app.config['CLIENT_ID'],
+                client_secret=app.config['CLIENT_SECRET'],
+                enterprise_id=app.config['EID'],
+                rsa_private_key_file_sys_path=os.path.join(os.path.dirname(__file__),'rsakey.pem'))
+    user_auth.authenticate_app_user(user) # <--- Authenticate as the user
+    user_client = Client(user_auth)
+
+    # Make API calls as the user by using the user_client object
+    files = user_client.folder(folder_id='0').get_items(limit=100)
+
+    # Build the preview link into any files sent to the client
+    for f in files:
+        if f._item_type=="file":
+            f.preview_url = f.get(fields=['expiring_embed_link']).expiring_embed_link['url']
+
+    token = user_auth.access_token
+    return render_template("user_detail.html",
+                           user=user,
+                           files_list=files,
+                           token=token)
+
+
 @app.route('/user/<user_id>', methods=['POST'])
 def delete_user(user_id):
     if request.form['deleteconf'].lower() == 'yes':
@@ -155,11 +155,22 @@ def delete_user(user_id):
         user = client.user(user_id=user_id)
         user.delete(params={"force":True}) # Use the force
 
-        time.sleep(1) # Wait for the DB to catch up
+        time.sleep(1) # Forcing thread sync or waiting for the DB to catch up
         return redirect(url_for('index'))
     else:
         flash("Must type YES to confirm", 'error')
         return redirect(url_for('delete_user', user_id=user_id))
+
+
+@app.route('/folder/<folder_id>', methods=['GET'])
+def folder_detail(folder_id):
+    client = Client(g.auth, network_layer=customLogger)
+    folder = client.folder(folder_id=folder_id).get()
+    files = folder.get_items(limit=100)
+
+    return render_template("folder_detail.html",
+                           folder=folder,
+                           files_list=files)
 
 
 # Example direct call to the API
@@ -167,6 +178,6 @@ def listAllUsers_direct_from_API(client):
     response = client.make_request('GET', "https://api.box.com/2.0/users").json()
     return [User(client._session, item['id'], item) for item in response['entries']]
 
-
+port=int(os.getenv('PORT', '5000'))
 if __name__ == "__main__":
-    app.run(debug=app.config['DEBUG'])
+    app.run(host="0.0.0.0", port=port, debug=app.config['DEBUG'])
