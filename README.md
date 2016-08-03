@@ -26,7 +26,7 @@ source pythonruntime/bin/activate
 
 
 ### Step 1: Pull code  
-Note: First navigate to the folder you want to place /boxflaskjwt/
+Note: Change to the directory where you want to create /boxflaskjwt/
 ```
 git clone https://github.com/dann815/boxflaskjwt.git  
 cd boxflaskjwt
@@ -34,7 +34,7 @@ cd boxflaskjwt
 
 
 ### Step 2: Generate your RSA keys  
-2.1 Create a private key…  
+2.1 Create a private key...   
 ... with a password:  
 ```
 openssl genrsa -aes256 -out rsakey.pem 2048
@@ -52,9 +52,9 @@ openssl rsa -pubout -in rsakey.pem -out rsapublic.pem
 
 
 ### Step 3: Input your RSA keys.  Whitelist your app.
-3.0 Log in (upper right corner) to the Box Developer Console at <http://developer.box.com>
-Create an app (right sidebar).
-Under "OAuth2 Parameters", select the Authentication Type with JWT.
+3.0 Log in (upper right corner) to the Box Developer Console at <http://developer.box.com>   
+Create an app (right sidebar).   
+Under "OAuth2 Parameters", select the Authentication Type with JWT.  Select the permissions your application will need.   
 
 
 3.1 Copy your public key:  
@@ -65,11 +65,11 @@ cat rsapublic.pem | pbcopy
 3.2 Add the public key to your application in the "Public Key Management" section of the developer console. REMEMBER TO CLICK SAVE!
 If you need help, follow the instructions at: <https://box-content.readme.io/v2.0/docs/app-auth>  
 
-3.3 Copy the Client ID. Whitelist your application against your Enterprise.
-1) Click "Admin Console" in the upper left corner.
-2) Click the gear icon in the upper right corner
-3) Click the first option (Business/Enterprise Settings)
-4) Apps -> Custom Applications -> Authorize New App -> Paste your Client ID
+3.3 Copy the Client ID. Whitelist your application against your Enterprise.   
+1) Click "Admin Console" in the upper left corner.   
+2) Click the gear icon in the upper right corner   
+3) Click the first option (Business/Enterprise Settings)   
+4) Apps -> Custom Applications -> Authorize New App -> Paste your Client ID   
 
 ### Step 4: Configuration  
 4.1 Create a file named settings.cfg   
@@ -86,7 +86,7 @@ exit()
 ```  
 
 
-4.3 Open a text editor and add the following lines to settings.cfg:  
+4.3 Open a text editor:  
 ```
 open -e settings.cfg
 ```
@@ -133,8 +133,8 @@ python main.py
  def listAllUsers(client):
     url = '{0}/users'.format(API.BASE_API_URL)
     box_response = client.make_request('GET', url)
-    response = box_response.json()
-    return [User(client._session, item['id'], item) for item in response['entries']]
+    responsejson = box_response.json()
+    return [User(client._session, item['id'], item) for item in responsejson['entries']]
 ```  
 
 #### Box SDK can be found at:  
