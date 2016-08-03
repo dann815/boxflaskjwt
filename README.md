@@ -85,6 +85,7 @@ exit()
 ```
 open -e settings.cfg
 ```
+Copy this into the file:
 ```
 # General config
 DEBUG = True
@@ -95,12 +96,18 @@ CLIENT_ID = 'YOUR CLIENT ID'
 CLIENT_SECRET = 'YOUR CLIENT SECRET'
 EID = 'YOUR BOX ENTERPRISE ID'
 ``` 
-Copy and paste your values.
+Fill in the values.  Your CLIENT_ID and CLIENT_SECRET are in the Box Developer Console where you just made your application.  
+
+To get your Box Enterprise ID:
+1) Click "Admin Console" in the upper left corner.
+2) Click the gear icon in the upper right corner
+3) Click the first option (Business/Enterprise Settings)
+4) Account Information -> Enterprise ID
 
   
-4.4 Set an environment variable to point to the location of the settings.cfg file  
+4.4 Set the environment variable to point to the full path location of the settings.cfg file  
 ```
-export BOX_APPLICATION_SETTINGS=/Users/danielkaplan/dev//settings.cfg
+export BOX_APPLICATION_SETTINGS=/FULL/PATH/TO/settings.cfg
 ```
 
 ### Step 5: Run the code  
