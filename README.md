@@ -1,15 +1,13 @@
 # Box App Users - Python/Flask Quickstart
 Code is commented. Everything important is in /main.py  
-
-Set up a Box Developer Application at:  
-<https://box-content.readme.io/v2.0/docs/box-platform>  
-
+Box Docs - <https://docs.box.com/docs/overview>   
+Box API Reference - <https://docs.box.com/reference>
 
 ### Step 0: Setup virtualenv & Install packages   
 It's always recommended to use [virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/) with Python  
 Use python 2.7.*  **Note: Does not work with 3.x**  
 
-0.1 Create and setup a virtualenv with something like this:
+0.1 Create and setup a virtualenv:   
 Note**: The Virtual Environment folder "boxpythonruntime" will be a created in the current folder
 ```
 sudo pip install virtualenv
@@ -37,33 +35,56 @@ cd boxflaskjwt
 
 ### Step 2: Generate your RSA keys  
 2.1 Create a private key…  
-...with a password:  
+... with a password:  
 ```
 openssl genrsa -aes256 -out rsakey.pem 2048
 ```  
-.. or without a password:  
+... or without a password:  
 ```
 openssl genrsa -out rsakey.pem 2048 
 ```  
-
+**NOTE: DO NOT COMMIT KEY FILE TO ANY PUBLIC LOCATIONS.  This code assumes the private key is in the project's folder.
 
 2.2 Create a public key from the private key:  
 ```
 openssl rsa -pubout -in rsakey.pem -out rsapublic.pem  
 ```
 
-### Step 3: Input your RSA keys  
+
+### Step 3: Input your RSA keys into Box Developer Console
+3.0 Log in (upper right corner) to the Box Developer Console at <http://developer.box.com>
+Create an app (right sidebar).
+Under "OAuth2 Parameters", select the Authentication Type with JWT.
+
+
 3.1 Copy your public key:  
 ```
 cat rsapublic.pem | pbcopy  
 ```
-3.2 Add the public key to your app at <https://developers.box.com/>->My Apps  
-Follow the instructions at: <https://box-content.readme.io/v2.0/docs/app-auth>  
-Put the private key in your project folder at the root level.  
+
+3.2 Add the public key to your application. CLICK SAVE!
+If you need help, follow the instructions at: <https://box-content.readme.io/v2.0/docs/app-auth>  
+
 
 ### Step 4: Configuration  
 4.1 Create a file named settings.cfg   
-4.2 Add the following lines to settings.cfg:  
+```
+touch settings.cfg
+```
+
+4.2 Generate and copy a random string: 
+```
+python
+import os
+os.urandom(24)
+exit()
+```  
+
+
+4.3 Open a text editor and add the following lines to settings.cfg:  
+```
+open -e settings.cfg
+```
 ```
 # General config
 DEBUG = True
@@ -72,18 +93,14 @@ SECRET_KEY = 'A RANDOM SECRET KEY'
 # Box config
 CLIENT_ID = 'YOUR CLIENT ID'
 CLIENT_SECRET = 'YOUR CLIENT SECRET'
-EID = 'YOUR EID'
+EID = 'YOUR BOX ENTERPRISE ID'
 ``` 
-Note: Generate a random string for the SECRET_KEY by running: 
-```
-python
-import os
-os.urandom(24)
-```  
+Copy and paste your values.
+
   
-3.3 Set an environment variable to point to the location of the settings.cfg file  
+4.4 Set an environment variable to point to the location of the settings.cfg file  
 ```
-export BOX_APPLICATION_SETTINGS=/Users/danielkaplan/dev/jwtFlask/settings.cfg
+export BOX_APPLICATION_SETTINGS=/Users/danielkaplan/dev//settings.cfg
 ```
 
 ### Step 5: Run the code  
