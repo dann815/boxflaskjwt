@@ -5,28 +5,33 @@ Set up a Box Developer Application at:
 <https://box-content.readme.io/v2.0/docs/box-platform>  
 
 
-
-### Step 0: Pull code  
-Navigate to the folder you want to place /boxflaskjwt/
-```
-cd ~/dev 
-git clone https://github.com/dann815/boxflaskjwt.git  
-```
-
-### Step 1: Install packages   
+### Step 0: Setup virtualenv & Install packages   
 It's always recommended to use [virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/) with Python  
 Use python 2.7.*  **Note: Does not work with 3.x**  
 
-1.1 Create and setup a virtualenv with something like this:
-Note**: Folder "pythonruntime" will be a created
+0.1 Create and setup a virtualenv with something like this:
+Note**: The Virtual Environment folder "boxpythonruntime" will be a created in the current folder
 ```
 sudo pip install virtualenv
 virtualenv pythonruntime && source pythonruntime/bin/activate && pip install -U setuptools wheel && pip install -U pip && pip install -U boxsdk[jwt]
 ```
- 
-1.2 Any time you want to use the virtualenv again in a new terminal window:
+
+0.2 To exit the virtual environment:
+```
+deactivate
+```
+
+0.3 To use the virtualenv again:
 ```
 source pythonruntime/bin/activate
+```
+
+
+### Step 1: Pull code  
+Note: First navigate to the folder you want to place /boxflaskjwt/
+```
+git clone https://github.com/dann815/boxflaskjwt.git  
+cd boxflaskjwt
 ```
 
 
