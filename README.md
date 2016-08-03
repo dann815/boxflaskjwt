@@ -1,5 +1,5 @@
 # Box App Users - Python/Flask Quickstart
-Code is commented. Everything important is in /main.py  
+Instructions assume you have access to the Admin account of your enterprise or are using a free Box account.  Code is commented. Everything important is in /main.py  
 Box Docs - <https://docs.box.com/docs/overview>   
 Box API Reference - <https://docs.box.com/reference>
 
@@ -11,7 +11,7 @@ Use python 2.7.*  **Note: Does not work with 3.x**
 Note**: The Virtual Environment folder "boxpythonruntime" will be a created in the current folder
 ```
 sudo pip install virtualenv
-virtualenv pythonruntime && source pythonruntime/bin/activate && pip install -U setuptools wheel && pip install -U pip && pip install -U boxsdk[jwt]
+virtualenv pythonruntime && source pythonruntime/bin/activate && pip install -U setuptools wheel && pip install -U pip && pip install -U flask && pip install -U boxsdk[jwt]
 ```
 
 0.2 To exit the virtual environment:
@@ -51,7 +51,7 @@ openssl rsa -pubout -in rsakey.pem -out rsapublic.pem
 ```
 
 
-### Step 3: Input your RSA keys into Box Developer Console
+### Step 3: Input your RSA keys.  Whitelist your app.
 3.0 Log in (upper right corner) to the Box Developer Console at <http://developer.box.com>
 Create an app (right sidebar).
 Under "OAuth2 Parameters", select the Authentication Type with JWT.
@@ -62,9 +62,14 @@ Under "OAuth2 Parameters", select the Authentication Type with JWT.
 cat rsapublic.pem | pbcopy  
 ```
 
-3.2 Add the public key to your application. CLICK SAVE!
+3.2 Add the public key to your application in the "Public Key Management" section of the developer console. REMEMBER TO CLICK SAVE!
 If you need help, follow the instructions at: <https://box-content.readme.io/v2.0/docs/app-auth>  
 
+3.3 Copy the Client ID. Whitelist your application against your Enterprise.
+1) Click "Admin Console" in the upper left corner.
+2) Click the gear icon in the upper right corner
+3) Click the first option (Business/Enterprise Settings)
+4) Apps -> Custom Applications -> Authorize New App -> Paste your Client ID
 
 ### Step 4: Configuration  
 4.1 Create a file named settings.cfg   
@@ -98,17 +103,19 @@ EID = 'YOUR BOX ENTERPRISE ID'
 ``` 
 Fill in the values.  Your CLIENT_ID and CLIENT_SECRET are in the Box Developer Console where you just made your application.  
 
-To get your Box Enterprise ID:
-1) Click "Admin Console" in the upper left corner.
-2) Click the gear icon in the upper right corner
-3) Click the first option (Business/Enterprise Settings)
-4) Account Information -> Enterprise ID
+To get your Box Enterprise ID:   
+1) Click "Admin Console" in the upper left corner.   
+2) Click the gear icon in the upper right corner   
+3) Click the first option (Business/Enterprise Settings)   
+4) Account Information -> Enterprise ID   
 
   
 4.4 Set the environment variable to point to the full path location of the settings.cfg file  
 ```
-export BOX_APPLICATION_SETTINGS=/FULL/PATH/TO/settings.cfg
+export BOX_APPLICATION_SETTINGS=/PATH/TO/settings.cfg
 ```
+Example:   
+export BOX_APPLICATION_SETTINGS=~/danielkaplan/dev/boxflaskjwt/settings.cfg
 
 ### Step 5: Run the code  
 5.1 Run:
