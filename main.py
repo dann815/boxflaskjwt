@@ -4,8 +4,8 @@ import os, time
 from flask import Flask, render_template, session, escape, g, request, url_for, redirect, flash
 
 app = Flask(__name__)
-app.config.from_envvar('BOX_APPLICATION_SETTINGS')
 app.config.from_object(__name__)
+app.config.from_envvar('BOX_APPLICATION_SETTINGS')
 
 import logging_network
 
@@ -42,6 +42,7 @@ Order of Operations:
 #  to refresh the token if it has been more than ~55 minutes.
 # For simplicity, this application refreshes through the session refresh cookie.
 def store_tokens(access_t, refresh_t):
+    print "STORE TOKENS (" + access_t + ")"
     session['token_id'] = access_t
 
     return
@@ -55,17 +56,26 @@ def load_auth_object_into_current_pageload_context():
         return
 
     if "token_id" in session:
+        print str(session)
         print "ACCESS TOKEN FOUND: {0}".format(escape(session['token_id']))
         auth = JWTAuth(client_id=app.config['CLIENT_ID'],
             client_secret=app.config['CLIENT_SECRET'],
             enterprise_id=app.config['EID'],
+            jwt_key_id=app.config['KEY_ID'],
             rsa_private_key_file_sys_path=os.path.join(os.path.dirname(__file__),'rsakey.pem'),
             store_tokens=store_tokens,
             access_token=escape(session['token_id'])) # <-- This is the difference.  Uses the old token.
     else:
+        print "CLIENT_ID: {0}".format(app.config['CLIENT_ID'])
+        print "CLIENT_SECRET: {0}".format(app.config['CLIENT_SECRET'])
+        print "EID: {0}".format(app.config['EID'])
+        print "KEY_ID: {0}".format(app.config['KEY_ID'])
+        print str(store_tokens)
+
         auth = JWTAuth(client_id=app.config['CLIENT_ID'],
             client_secret=app.config['CLIENT_SECRET'],
             enterprise_id=app.config['EID'],
+            jwt_key_id=app.config['KEY_ID'],
             rsa_private_key_file_sys_path=os.path.join(os.path.dirname(__file__),'rsakey.pem'),
             store_tokens=store_tokens)
     g.auth = auth
@@ -126,6 +136,7 @@ def user_detail(user_id):
     user_auth = JWTAuth(client_id=app.config['CLIENT_ID'],
                 client_secret=app.config['CLIENT_SECRET'],
                 enterprise_id=app.config['EID'],
+                jwt_key_id=app.config['KEY_ID'],
                 rsa_private_key_file_sys_path=os.path.join(os.path.dirname(__file__),'rsakey.pem'))
     user_auth.authenticate_app_user(user) # <--- Authenticate as the user
     user_client = Client(user_auth)
