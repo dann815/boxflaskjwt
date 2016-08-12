@@ -62,14 +62,17 @@ Under "OAuth2 Parameters", select the Authentication Type with JWT.  Select the 
 cat rsapublic.pem | pbcopy  
 ```
 
-3.2 Add the public key to your application in the "Public Key Management" section of the developer console. REMEMBER TO CLICK SAVE!
+3.2 Add the public key to your application in the "Public Key Management" section of the developer console. REMEMBER TO CLICK SAVE!  Note down the "Key ID" listed next to your Public Key
 If you need help, follow the instructions at: <https://box-content.readme.io/v2.0/docs/app-auth>  
 
-3.3 Copy the Client ID. Whitelist your application against your Enterprise.   
+3.3 Set your Redirect URI to https://localhost and then Save the application   
+   
+3.4 Copy the Client ID. Whitelist your application against your Enterprise.   
 1) Click "Admin Console" in the upper left corner.   
 2) Click the gear icon in the upper right corner   
 3) Click the first option (Business/Enterprise Settings)   
 4) Apps -> Custom Applications -> Authorize New App -> Paste your Client ID   
+
 
 ### Step 4: Configuration  
 4.1 Create a file named settings.cfg   
